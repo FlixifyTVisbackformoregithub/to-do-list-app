@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-image: linear-gradient(to right, #454545, #000);
+            color: #FFFFFF;
+            font-family: 'Poppins', sans-serif; 
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .sidebar {
+            background-color: #1E1E1E;
+            width: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar i {
+            margin: 15px 0;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .sidebar i:hover {
+            color: #00FFAB; /* Neon green on hover */
+        }
+
+        .container {
+            flex: 1;
+            background-color: #1E1E1E;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            margin: 20px;
+            max-width: 500px;
+            text-align: center;
+            transition: transform 0.3s;
+            position: relative;
+            display: none; /* Initially hidden */
+        }
+
+        .active {
+            display: block; /* Show active container */
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #00FFAB; 
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+            font-weight: 700; 
+        }
+
+        #todoInput {
+            padding: 15px;
+            font-size: 18px;
+            width: calc(100% - 40px);
+            border: none;
+            border-radius: 9px;
+            margin-bottom: 10px;
+            background-color: #333;
+            color: white;
+            transition: background-color 0.3s, box-shadow 0.3s; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            font-weight: 600; 
+        }
+
+        #todoInput:focus {
+            outline: none;
+            background-color: #454545;
+            box-shadow: 0 0 15px rgba(0, 255, 171, 0.7);
+        }
+
+        #addButton {
+            padding: 15px;
+            font-size: 18px;
+            background-color: #00FFAB;
+            border: none;
+            border-radius: 8px;
+            color: black;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            width: 100%;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #addButton:hover {
+            background-color: #00D89C;
+            transform: translateY(-2px);
+        }
+
+        #todoList {
+            margin-top: 20px;
+            max-height: 300px; 
+            overflow-y: auto;
+            text-align: left;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 5px;
+            background-color: #2E2E2E;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .todo-item:hover {
+            background-color: #3D3D3D;
+            transform: scale(1.02);
+        }
+
+        .circle {
+            width: 25px;
+            height: 25px;
+            border: 2px solid #00FFAB;
+            border-radius: 50%;
+            margin-right: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .circle.checked {
+            background-color: #00FFAB; 
+        }
+
+        .circle.checked::after {
+            content: '✓';
+            position: absolute;
+            left: 4px;
+            top: -1px;
+            color: black;
+            font-size: 18px;
+            transform: scale(1.2);
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 18px;
+            color: #e0e0e0;
+            transition: text-decoration 0.3s, color 0.3s;
+            font-weight: 600; 
+        }
+
+        .todo-text.checked {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+
+        .trash-btn {
+            background: none;
+            border: none;
+            color: #FF3B30;
+            cursor: pointer;
+            font-size: 20px;
+            transition: transform 0.3s;
+        }
+
+        .trash-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #bbb;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+            position: relative;
+            width: 100%;
+            font-weight: 600; 
+        }
+
+        .calendar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .calendar input {
+            padding: 15px;
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            background-color: #333;
+            color: white;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+
+        .calendar input:focus {
+            outline: none;
+            background-color: #454545;
+            box-shadow: 0 0 15px rgba(0, 255, 171, 0.7);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <i class="fas fa-tasks" title="Tasks" id="tasksButton"></i>
+        <i class="fas fa-calendar" title="Calendar" id="calendarButton"></i>
+        <i class="fas fa-cog" title="Settings" id="settingsButton"></i>
+        <i class="fas fa-sign-out-alt" title="Exit" id="exitButton"></i>
+    </div>
+
+    <div class="container active" id="tasksContainer">
+        <h2>To-Do List</h2>
+        <input type="text" id="todoInput" placeholder="Add a new task..." />
+        <button id="addButton">Add Task</button>
+        <div id="todoList"></div>
+        <div class="footer">© 2023 Cool To-Do List App</div>
+    </div>
+
+    <div class="container" id="calendarContainer">
+        <h2>Calendar</h2>
+        <div class="calendar">
+            <h3>Select a Date:</h3>
+            <input type="date" id="calendarInput" />
+        </div>
+        <div class="footer">© 2023 Cool To-Do List App</div>
+    </div>
+
+    <script>
+        // Navigation between pages
+        const tasksButton = document.getElementById('tasksButton');
+        const calendarButton = document.getElementById('calendarButton');
+        const tasksContainer = document.getElementById('tasksContainer');
+        const calendarContainer = document.getElementById('calendarContainer');
+
+        tasksButton.addEventListener('click', () => {
+            tasksContainer.classList.add('active');
+            calendarContainer.classList.remove('active');
+            loadTasks(); // Load tasks when switching to tasks page
+        });
+
+        calendarButton.addEventListener('click', () => {
+            calendarContainer.classList.add('active');
+            tasksContainer.classList.remove('active');
+        });
+
+        // Load tasks from local storage
+        function loadTasks() {
+            const tasks = JSON.parse(localStorage.getItem('todos')) || [];
+            tasks.forEach(task => createTodoElement(task.text, task.completed));
+        }
+
+        // Save tasks to local storage
+        function saveTasks() {
+            const tasks = [];
+            document.querySelectorAll('.todo-item').forEach(item => {
+                const text = item.querySelector('.todo-text').textContent;
+                const completed = item.querySelector('.circle').classList.contains('checked');
+                tasks.push({ text, completed });
+            });
+            localStorage.setItem('todos', JSON.stringify(tasks));
+        }
+
+        function createTodoElement(todoText, completed = false) {
+            const todoList = document.getElementById('todoList');
+            const todoItem = document.createElement('div');
+            todoItem.classList.add('todo-item');
+
+            const circle = document.createElement('div');
+            circle.classList.add('circle');
+            if (completed) circle.classList.add('checked');
+
+            const text = document.createElement('div');
+            text.classList.add('todo-text');
+            if (completed) text.classList.add('checked');
+            text.textContent = todoText;
+
+            const trashBtn = document.createElement('button');
+            trashBtn.innerHTML = '<i class="fas fa-trash"></i>'; 
+            trashBtn.classList.add('trash-btn');
+            trashBtn.addEventListener('click', function () {
+                todoList.removeChild(todoItem);
+                saveTasks();
+            });
+
+            todoItem.appendChild(circle);
+            todoItem.appendChild(text);
+            todoItem.appendChild(trashBtn);
+            todoList.appendChild(todoItem);
+
+            circle.addEventListener('click', function () {
+                circle.classList.toggle('checked');
+                text.classList.toggle('checked');
+                saveTasks();
+            });
+        }
+
+        document.getElementById('addButton').addEventListener('click', function () {
+            const todoInput = document.getElementById('todoInput');
+            const todoText = todoInput.value.trim();
+
+            if (todoText !== '') {
+                createTodoElement(todoText);
+                todoInput.value = '';
+                saveTasks();
+            }
+        });
+
+        // Calendar Local Storage Handling
+        document.getElementById('calendarInput').addEventListener('change', function() {
+            const selectedDate = this.value;
+            localStorage.setItem('selectedDate', selectedDate);
+            if (selectedDate) {
+                alert(`Date selected: ${selectedDate}`);
+            }
+        });
+
+        // Load selected date on startup
+        window.onload = function() {
+            const savedDate = localStorage.getItem('selectedDate');
+            if (savedDate) {
+                document.getElementById('calendarInput').value = savedDate;
+            }
+            loadTasks();
+        };
+
+        document.getElementById('exitButton').addEventListener('click', function() {
+            window.close(); // Attempt to close the tab
+        });
+
+        loadTasks();
+    </script>
+
+</body>
+</html>
